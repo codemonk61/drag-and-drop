@@ -1,7 +1,9 @@
 import { BLOCK_SETTINGS } from '../../utils/componentMap';
-import { compressImage } from '../../utils/imageHelpers';
+import useImageUpload from '../../hooks/useImageUpload';
 
 export default function SettingsPanel({ item, updateProps, removeComponent, duplicateComponent }) {
+  const { upload, isUploading } = useImageUpload();
+
   if (!item) {
     return (
       <aside className="w-[300px] flex-shrink-0 bg-white border-l flex items-center justify-center h-full">
@@ -21,13 +23,9 @@ export default function SettingsPanel({ item, updateProps, removeComponent, dupl
   const handleImageUpload = async (key, e) => {
     const file = e.target.files[0];
     if (!file) return;
-    try {
-      const optimized = await compressImage(file, 1200, 0.8);
-      updateProps(item.id, key, optimized);
-    } catch {
-      const reader = new FileReader();
-      reader.onload = () => updateProps(item.id, key, reader.result);
-      reader.readAsDataURL(file);
+    const result = await upload(file);
+    if (result) {
+      updateProps(item.id, key, result);
     }
   };
 
@@ -70,6 +68,7 @@ export default function SettingsPanel({ item, updateProps, removeComponent, dupl
             value={item.props[setting.key]}
             onChange={(val) => updateProps(item.id, setting.key, val)}
             onImageUpload={(e) => handleImageUpload(setting.key, e)}
+            isUploading={isUploading}
           />
         ))}
       </div>
@@ -77,8 +76,8 @@ export default function SettingsPanel({ item, updateProps, removeComponent, dupl
   );
 }
 
-function SettingField({ setting, value, onChange, onImageUpload }) {
-  const { key, label, type, min, max, step, options } = setting;
+function SettingField({ setting, value, onChange, onImageUpload, isUploading }) {
+  const { label, type, min, max, step, options } = setting;
 
   return (
     <div>
@@ -152,6 +151,8 @@ function SettingField({ setting, value, onChange, onImageUpload }) {
         <button
           onClick={() => onChange(!value)}
           className={`relative w-11 h-6 rounded-full transition-colors ${value ? 'bg-blue-500' : 'bg-gray-200'}`}
+          role="switch"
+          aria-checked={!!value}
         >
           <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${value ? 'left-[22px]' : 'left-0.5'}`} />
         </button>
@@ -165,17 +166,27 @@ function SettingField({ setting, value, onChange, onImageUpload }) {
               <button
                 onClick={() => onChange(null)}
                 className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/80"
+                aria-label="Remove image"
               >
                 x
               </button>
             </div>
           )}
-          <label className="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            <span className="text-xs text-gray-500">{value ? 'Replace image' : 'Upload image'}</span>
-            <input type="file" accept="image/*" onChange={onImageUpload} className="hidden" />
+          <label className={`flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+            {isUploading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                <span className="text-xs text-gray-500">Uploading...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                <span className="text-xs text-gray-500">{value ? 'Replace image' : 'Upload image'}</span>
+              </>
+            )}
+            <input type="file" accept="image/*" onChange={onImageUpload} className="hidden" disabled={isUploading} />
           </label>
         </div>
       )}
