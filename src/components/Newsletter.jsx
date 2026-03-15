@@ -7,11 +7,14 @@ export default function Newsletter({ props, children }) {
       <div className="max-w-lg mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold mb-3">{props.title}</h2>
         <p className="opacity-70 mb-8 text-sm">{props.subtitle}</p>
-        <div className="flex gap-0">
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="newsletter-form-responsive"
+        >
           <input
             type="email"
             placeholder={props.inputPlaceholder}
-            className="flex-1 px-5 py-3.5 text-sm outline-none"
+            className="flex-1 px-5 py-3.5 text-sm outline-none min-w-0"
             style={{
               backgroundColor: 'rgba(255,255,255,0.1)',
               color: props.textColor,
@@ -19,12 +22,13 @@ export default function Newsletter({ props, children }) {
             }}
           />
           <button
+            type="submit"
             style={{ backgroundColor: props.buttonBg, color: props.buttonColor }}
-            className="px-8 py-3.5 text-sm font-medium tracking-wide hover:opacity-90 transition-opacity"
+            className="px-8 py-3.5 text-sm font-medium tracking-wide hover:opacity-90 transition-opacity flex-shrink-0"
           >
             {props.buttonText}
           </button>
-        </div>
+        </form>
         {children}
       </div>
     </div>

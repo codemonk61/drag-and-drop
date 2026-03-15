@@ -7,6 +7,11 @@ export default function Carousel({ props, children }) {
   const autoPlay = props.autoPlay !== false;
   const interval = (props.interval || 5) * 1000;
 
+  // Clamp current index when slides are added/removed
+  useEffect(() => {
+    setCurrent(i => (i >= total ? Math.max(0, total - 1) : i));
+  }, [total]);
+
   const next = useCallback(() => setCurrent(i => (i + 1) % total), [total]);
   const prev = useCallback(() => setCurrent(i => (i - 1 + total) % total), [total]);
 

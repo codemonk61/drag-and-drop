@@ -1,16 +1,6 @@
 export default function InfoCard({ props }) {
-  return (
-    <div
-      style={{
-        backgroundColor: props.bgColor || '#ffffff',
-        borderRadius: `${props.borderRadius || 12}px`,
-        overflow: 'hidden',
-        cursor: 'pointer',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-      }}
-      className="hover:shadow-lg hover:-translate-y-0.5"
-    >
+  const cardContent = (
+    <>
       {/* Image */}
       <div style={{ aspectRatio: props.aspectRatio || '4/3', backgroundColor: '#f3f4f6', overflow: 'hidden' }}>
         {props.image ? (
@@ -18,7 +8,6 @@ export default function InfoCard({ props }) {
             src={props.image}
             alt={props.title || ''}
             style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }}
-            className="group-hover:scale-105"
           />
         ) : (
           <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -45,6 +34,32 @@ export default function InfoCard({ props }) {
           </span>
         )}
       </div>
+    </>
+  );
+
+  const style = {
+    backgroundColor: props.bgColor || '#ffffff',
+    borderRadius: `${props.borderRadius || 12}px`,
+    overflow: 'hidden',
+    cursor: 'pointer',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+    transition: 'transform 0.2s, box-shadow 0.2s',
+    display: 'block',
+    textDecoration: 'none',
+    color: 'inherit',
+  };
+
+  if (props.link) {
+    return (
+      <a href={props.link} style={style} className="hover:shadow-lg hover:-translate-y-0.5">
+        {cardContent}
+      </a>
+    );
+  }
+
+  return (
+    <div style={style} className="hover:shadow-lg hover:-translate-y-0.5">
+      {cardContent}
     </div>
   );
 }

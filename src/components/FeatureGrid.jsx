@@ -29,7 +29,7 @@ export default function FeatureGrid({ props }) {
     <div style={{ padding: `${props.padding}px`, backgroundColor: props.bgColor, color: props.textColor }}>
       <div className="max-w-5xl mx-auto">
         {props.title && <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">{props.title}</h2>}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="feature-grid-responsive" style={{ '--cols': 4 }}>
           {features.map((feat, i) => (
             <div key={i} className="text-center">
               <div className="flex justify-center mb-4 opacity-70">

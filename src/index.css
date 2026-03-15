@@ -30,3 +30,134 @@
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+/* ── Container Query Responsive Components ── */
+
+/* Product Grid: responsive columns based on container width */
+.product-grid-responsive {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+}
+
+@container (max-width: 768px) {
+  .product-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (max-width: 480px) {
+  .product-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Header: responsive nav based on container width */
+.header-desktop-nav {
+  display: flex;
+}
+.header-hamburger {
+  display: none;
+}
+
+@container (max-width: 640px) {
+  .header-desktop-nav {
+    display: none !important;
+  }
+  .header-hamburger {
+    display: block !important;
+  }
+}
+
+/* Collection List: responsive */
+.collection-grid-responsive {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(var(--cols, 3), 1fr);
+}
+
+@container (max-width: 768px) {
+  .collection-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (max-width: 480px) {
+  .collection-grid-responsive {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Feature Grid: responsive */
+.feature-grid-responsive {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(var(--cols, 4), 1fr);
+}
+
+@container (max-width: 768px) {
+  .feature-grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (max-width: 480px) {
+  .feature-grid-responsive {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Footer: responsive */
+.footer-grid-responsive {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 2fr repeat(3, 1fr);
+}
+
+@container (max-width: 768px) {
+  .footer-grid-responsive {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-grid-responsive > *:first-child {
+    grid-column: span 2;
+  }
+}
+
+@container (max-width: 480px) {
+  .footer-grid-responsive {
+    grid-template-columns: 1fr;
+  }
+  .footer-grid-responsive > *:first-child {
+    grid-column: span 1;
+  }
+}
+
+/* Image with Text: responsive */
+.image-with-text-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+@container (max-width: 640px) {
+  .image-with-text-grid {
+    grid-template-columns: 1fr;
+  }
+  .image-with-text-grid > * {
+    order: unset !important;
+  }
+}
+
+/* Newsletter: responsive form */
+.newsletter-form-responsive {
+  display: flex;
+  gap: 0;
+}
+
+@container (max-width: 480px) {
+  .newsletter-form-responsive {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

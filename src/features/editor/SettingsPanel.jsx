@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BLOCK_SETTINGS } from '../../utils/componentMap';
 import useImageUpload from '../../hooks/useImageUpload';
 
@@ -190,6 +191,177 @@ function SettingField({ setting, value, onChange, onImageUpload, isUploading }) 
           </label>
         </div>
       )}
+      {type === 'product-list' && (
+        <ProductListEditor value={value} onChange={onChange} />
+      )}
+
+      {type === 'collection-list' && (
+        <CollectionListEditor value={value} onChange={onChange} />
+      )}
+
+      {type === 'feature-list' && (
+        <FeatureListEditor value={value} onChange={onChange} />
+      )}
+    </div>
+  );
+}
+
+/* ── Product List Editor ── */
+function ProductListEditor({ value, onChange }) {
+  const { upload, isUploading } = useImageUpload();
+  let items = [];
+  try { items = JSON.parse(value); } catch { items = []; }
+
+  const update = (idx, field, val) => {
+    const next = [...items];
+    next[idx] = { ...next[idx], [field]: val };
+    onChange(JSON.stringify(next));
+  };
+
+  const add = () => {
+    onChange(JSON.stringify([...items, { name: 'New Product', price: '$0.00', image: null, link: '', openNewTab: false }]));
+  };
+
+  const remove = (idx) => {
+    onChange(JSON.stringify(items.filter((_, i) => i !== idx)));
+  };
+
+  const handleImage = async (idx, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const result = await upload(file);
+    if (result) update(idx, 'image', result);
+  };
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, i) => (
+        <div key={i} className="border border-gray-200 rounded-lg p-3 bg-gray-50 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-medium text-gray-500">Product {i + 1}</span>
+            <button onClick={() => remove(i)} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
+          </div>
+          {item.image && (
+            <div className="relative rounded overflow-hidden bg-gray-100">
+              <img src={item.image} alt="" className="w-full h-16 object-cover" />
+              <button onClick={() => update(i, 'image', null)} className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">x</button>
+            </div>
+          )}
+          <label className={`flex items-center justify-center gap-1.5 px-2 py-1.5 border border-dashed border-gray-300 rounded cursor-pointer hover:border-blue-400 text-xs text-gray-500 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+            {isUploading ? 'Uploading...' : (item.image ? 'Replace Image' : 'Upload Image')}
+            <input type="file" accept="image/*" onChange={(e) => handleImage(i, e)} className="hidden" />
+          </label>
+          <input type="text" value={item.name || ''} onChange={e => update(i, 'name', e.target.value)} placeholder="Product name" className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400" />
+          <input type="text" value={item.price || ''} onChange={e => update(i, 'price', e.target.value)} placeholder="$0.00" className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400" />
+          <input type="text" value={item.link || ''} onChange={e => update(i, 'link', e.target.value)} placeholder="Link URL (e.g. /product/123)" className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400" />
+          <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+            <input type="checkbox" checked={!!item.openNewTab} onChange={e => update(i, 'openNewTab', e.target.checked)} className="accent-blue-500" />
+            Open in new tab
+          </label>
+        </div>
+      ))}
+      <button onClick={add} className="w-full py-2 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors">
+        + Add Product
+      </button>
+    </div>
+  );
+}
+
+/* ── Collection List Editor ── */
+function CollectionListEditor({ value, onChange }) {
+  const { upload, isUploading } = useImageUpload();
+  let items = [];
+  try { items = JSON.parse(value); } catch { items = []; }
+
+  const update = (idx, field, val) => {
+    const next = [...items];
+    next[idx] = { ...next[idx], [field]: val };
+    onChange(JSON.stringify(next));
+  };
+
+  const add = () => {
+    onChange(JSON.stringify([...items, { name: 'New Collection', image: null, link: '' }]));
+  };
+
+  const remove = (idx) => {
+    onChange(JSON.stringify(items.filter((_, i) => i !== idx)));
+  };
+
+  const handleImage = async (idx, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const result = await upload(file);
+    if (result) update(idx, 'image', result);
+  };
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, i) => (
+        <div key={i} className="border border-gray-200 rounded-lg p-3 bg-gray-50 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-medium text-gray-500">Collection {i + 1}</span>
+            <button onClick={() => remove(i)} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
+          </div>
+          {item.image && (
+            <div className="relative rounded overflow-hidden bg-gray-100">
+              <img src={item.image} alt="" className="w-full h-16 object-cover" />
+              <button onClick={() => update(i, 'image', null)} className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">x</button>
+            </div>
+          )}
+          <label className={`flex items-center justify-center gap-1.5 px-2 py-1.5 border border-dashed border-gray-300 rounded cursor-pointer hover:border-blue-400 text-xs text-gray-500 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+            {isUploading ? 'Uploading...' : (item.image ? 'Replace Image' : 'Upload Image')}
+            <input type="file" accept="image/*" onChange={(e) => handleImage(i, e)} className="hidden" />
+          </label>
+          <input type="text" value={item.name || ''} onChange={e => update(i, 'name', e.target.value)} placeholder="Collection name" className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400" />
+          <input type="text" value={item.link || ''} onChange={e => update(i, 'link', e.target.value)} placeholder="Link URL (e.g. /collections/women)" className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400" />
+        </div>
+      ))}
+      <button onClick={add} className="w-full py-2 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors">
+        + Add Collection
+      </button>
+    </div>
+  );
+}
+
+/* ── Feature List Editor ── */
+function FeatureListEditor({ value, onChange }) {
+  let items = [];
+  try { items = JSON.parse(value); } catch { items = []; }
+
+  const iconOptions = ['truck', 'shield', 'refresh', 'headphones', 'star', 'bolt', 'globe', 'diamond', 'users', 'certificate'];
+
+  const update = (idx, field, val) => {
+    const next = [...items];
+    next[idx] = { ...next[idx], [field]: val };
+    onChange(JSON.stringify(next));
+  };
+
+  const add = () => {
+    onChange(JSON.stringify([...items, { icon: 'star', title: 'New Feature', desc: 'Description' }]));
+  };
+
+  const remove = (idx) => {
+    onChange(JSON.stringify(items.filter((_, i) => i !== idx)));
+  };
+
+  return (
+    <div className="space-y-3">
+      {items.map((item, i) => (
+        <div key={i} className="border border-gray-200 rounded-lg p-3 bg-gray-50 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-medium text-gray-500">Feature {i + 1}</span>
+            <button onClick={() => remove(i)} className="text-red-400 hover:text-red-600 text-xs">Remove</button>
+          </div>
+          <select value={item.icon || 'star'} onChange={e => update(i, 'icon', e.target.value)} className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400">
+            {iconOptions.map(ic => <option key={ic} value={ic}>{ic}</option>)}
+          </select>
+          <input type="text" value={item.title || ''} onChange={e => update(i, 'title', e.target.value)} placeholder="Feature title" className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400" />
+          <input type="text" value={item.desc || ''} onChange={e => update(i, 'desc', e.target.value)} placeholder="Description" className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded bg-white outline-none focus:border-blue-400" />
+        </div>
+      ))}
+      <button onClick={add} className="w-full py-2 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors">
+        + Add Feature
+      </button>
     </div>
   );
 }

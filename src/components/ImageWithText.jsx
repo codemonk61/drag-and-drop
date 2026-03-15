@@ -4,8 +4,8 @@ export default function ImageWithText({ props, children }) {
   return (
     <div style={{ padding: `${props.padding}px`, backgroundColor: props.bgColor, color: props.textColor }}>
       <div className="max-w-6xl mx-auto">
-        <div className={`grid md:grid-cols-2 gap-12 items-center`}>
-          <div className={imageLeft ? '' : 'md:order-2'}>
+        <div className="image-with-text-grid items-center" style={{ '--img-order': imageLeft ? 1 : 2, '--txt-order': imageLeft ? 2 : 1 }}>
+          <div style={{ order: 'var(--img-order)' }}>
             {props.image ? (
               <img src={props.image} alt={props.title} className="w-full h-auto object-cover" />
             ) : (
@@ -16,16 +16,28 @@ export default function ImageWithText({ props, children }) {
               </div>
             )}
           </div>
-          <div className={imageLeft ? '' : 'md:order-1'}>
+          <div style={{ order: 'var(--txt-order)' }}>
             <h2 className="text-2xl md:text-3xl font-bold mb-4">{props.title}</h2>
             <p className="opacity-70 leading-relaxed mb-8">{props.description}</p>
             {props.buttonText && (
-              <button
-                style={{ backgroundColor: props.buttonBg, color: props.buttonColor }}
-                className="px-8 py-3.5 text-sm font-medium tracking-wide hover:opacity-90 transition-opacity"
-              >
-                {props.buttonText}
-              </button>
+              props.buttonLink ? (
+                <a
+                  href={props.buttonLink}
+                  target={props.openNewTab ? '_blank' : '_self'}
+                  rel="noopener noreferrer"
+                  style={{ backgroundColor: props.buttonBg, color: props.buttonColor, textDecoration: 'none', display: 'inline-block' }}
+                  className="px-8 py-3.5 text-sm font-medium tracking-wide hover:opacity-90 transition-opacity"
+                >
+                  {props.buttonText}
+                </a>
+              ) : (
+                <button
+                  style={{ backgroundColor: props.buttonBg, color: props.buttonColor }}
+                  className="px-8 py-3.5 text-sm font-medium tracking-wide hover:opacity-90 transition-opacity"
+                >
+                  {props.buttonText}
+                </button>
+              )
             )}
             {children}
           </div>

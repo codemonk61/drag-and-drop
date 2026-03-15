@@ -31,12 +31,24 @@ export default function HeroBanner({ props, children }) {
           </p>
         )}
         {props.buttonText && (
-          <button
-            style={{ backgroundColor: props.buttonBg, color: props.buttonColor }}
-            className="px-10 py-4 text-sm font-medium tracking-[0.15em] uppercase hover:opacity-90 transition-opacity"
-          >
-            {props.buttonText}
-          </button>
+          props.buttonLink ? (
+            <a
+              href={props.buttonLink}
+              target={props.openNewTab ? '_blank' : '_self'}
+              rel="noopener noreferrer"
+              style={{ backgroundColor: props.buttonBg, color: props.buttonColor, textDecoration: 'none', display: 'inline-block' }}
+              className="px-10 py-4 text-sm font-medium tracking-[0.15em] uppercase hover:opacity-90 transition-opacity"
+            >
+              {props.buttonText}
+            </a>
+          ) : (
+            <button
+              style={{ backgroundColor: props.buttonBg, color: props.buttonColor }}
+              className="px-10 py-4 text-sm font-medium tracking-[0.15em] uppercase hover:opacity-90 transition-opacity"
+            >
+              {props.buttonText}
+            </button>
+          )
         )}
         {children}
       </div>
